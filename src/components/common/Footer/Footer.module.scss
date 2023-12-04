@@ -1,0 +1,19 @@
+@import "@/styles/variables.module.scss";
+
+.footer {
+    padding-bottom: 20px;
+}
+
+.footer_quote {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.footer_copyrigth {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}

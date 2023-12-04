@@ -1,0 +1,45 @@
+@import "@/styles/variables.module.scss";
+
+.link_container {
+    display: flex;
+    gap: 6rem;
+    padding: 0 20px;
+    margin-bottom: 10px;
+
+    @media screen and (max-width: $width-sm) {
+        padding: 0 10px;
+        gap: 2rem;
+    }
+
+    @media screen and (max-width: 375px) {
+        padding: 0;
+        gap: 0rem;
+
+        a {
+            padding: 5px;
+        }
+    }
+}
+
+.link_content {
+    display: flex;
+    flex-direction: column;
+}
+
+.link_light {
+    color: $on-primary-container-color;
+
+    &:hover {
+        color: $primary-color;
+        box-shadow: 0 1px 0 0 $primary-color;
+    }
+}
+
+.link_dark {
+    color: $on-primary-container-color-dark;
+
+    &:hover {
+        color: $primary-color-dark;
+        box-shadow: 0 1px 0 0 $primary-color-dark;
+    }
+}

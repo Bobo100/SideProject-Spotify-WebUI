@@ -1,0 +1,22 @@
+@import "./variables.module.scss";
+
+// @import "./theme/theme.css";
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    display: inline-block;
+    text-decoration: none;
+    padding: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+// .light {
+//     background-color: $background-color;
+// }
+
+// .dark {
+//     background-color: $background-color-dark;
+// }
