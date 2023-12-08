@@ -1,12 +1,11 @@
-// pages/api/spotify-me-playlists.tsx
+// pages/api/spotify-devices.tsx
 import type { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { token, id } = req.body;
+    const { token } = req.body;
     try {
-        // https://api.spotify.com/v1/users/{user_id}/playlists
-        const spotifyResponse = await fetch('https://api.spotify.com/v1/users/' + id + '/playlists', {
+        const spotifyResponse = await fetch('https://api.spotify.com/v1/me/player/devices', {
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
             }
         });
 
@@ -17,5 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const data = await spotifyResponse.json();
         res.status(200).json(data); // 這個就會回傳給前端
     } catch (error) {
+        console.error('Spotify API error:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
