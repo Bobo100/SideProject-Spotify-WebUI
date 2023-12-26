@@ -1,9 +1,14 @@
-// pages/api/spotify-devices.tsx
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+/**
+ * api/user/profile.tsx 取得使用者資料
+ * @param req 
+ * @param res 
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { token } = req.body;
     try {
-        const spotifyResponse = await fetch('https://api.spotify.com/v1/me/player/devices', {
+        const spotifyResponse = await fetch('https://api.spotify.com/v1/me', {
             headers: {
                 Authorization: `Bearer ${token}`,
             }

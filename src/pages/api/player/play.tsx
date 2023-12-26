@@ -1,8 +1,11 @@
-// pages/api/spotify-play.tsx
 import type { NextApiRequest, NextApiResponse } from 'next';
+/**
+ * api/spotify-play.tsx 播放歌曲
+ * @param req 
+ * @param res 
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { token, activeDeviceId, uris } = req.body;
-    console.log(req.body);
     try {
         // {
         //     "context_uri": "spotify:album:5ht7ItJgpBH7W6vJ5BqpPr",

@@ -1,5 +1,9 @@
-// pages/api/spotify-pause.tsx
 import type { NextApiRequest, NextApiResponse } from 'next';
+/**
+ * api/player/pause.tsx 暫停播放
+ * @param req 
+ * @param res 
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { token, activeDeviceId } = req.body;
     try {

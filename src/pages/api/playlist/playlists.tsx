@@ -1,5 +1,9 @@
-// pages/api/spotify-me-playlists.tsx
 import type { NextApiRequest, NextApiResponse } from 'next';
+/**
+ * api/playlist/playlists.tsx 取得使用者的歌單
+ * @param req 
+ * @param res 
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { token, id } = req.body;
     try {

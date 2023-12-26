@@ -7,7 +7,7 @@ import { useTheme } from "next-themes"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { getThemeClassName } from "@/utils/getThemeClassName"
-import { useScrollLock } from "@/utils/scrollHook"
+import { useScrollLock } from "@/components/common/hook/scrollHook"
 import { LinkList } from "../LinkList"
 
 const NavBar = () => {

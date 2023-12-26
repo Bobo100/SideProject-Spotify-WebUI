@@ -1,4 +1,3 @@
-// component/redux/slice/asyncSlice.tsx
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { asyncInitialState } from "../state/stateType"
 import { RootState } from "../store/store"

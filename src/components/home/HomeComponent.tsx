@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { routeLink, authLink, userLink, playlistLink, playerLink } from "@/utils/routeLink";
+import Link from "next/link";
 
 export default function HomeComponent() {
     const [accessToken, setAccessToken] = useState<string>();
@@ -11,34 +13,32 @@ export default function HomeComponent() {
             const accessToken = router.query.accessToken as string;
             if (accessToken) {
                 setAccessToken(accessToken);
-                // 然後把網址改回去
                 router.replace('/');
             }
         }
         getAccessToken();
     }, [router]);
 
-    // 導向到spotify-me.tsx 要戴上query accessToken
     const handleGetMe = async () => {
-        if (!accessToken) return;
-        const result = await fetch(`/api/spotify-me`, {
+        // if (!accessToken) return;
+        const result = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.user}${userLink.profile}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                token: accessToken,
-            }),
+            // body: JSON.stringify({
+            //     token: accessToken,
+            // }),
         });
-        const data = await result.json();
-        console.log(data);
-        setMe(data);
+        // const data = await result.json();
+        // console.log(data);
+        // setMe(data);
     }
 
     const handleGetMePlaylists = async () => {
         if (!accessToken || !me) return;
         const { id } = me;
-        const result = await fetch(`/api/spotify-me-playlists`, {
+        const result = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.playlist}${playlistLink.playlists}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export default function HomeComponent() {
 
     const handleGetDevices = async () => {
         if (!accessToken) return;
-        const result = await fetch(`/api/spotify-devices`, {
+        const result = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.player}${playerLink.device}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export default function HomeComponent() {
 
     const handlePlay = async () => {
         if (!accessToken) return;
-        const result = await fetch(`/api/spotify-play`, {
+        const result = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.player}${playerLink.play}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export default function HomeComponent() {
     const handlePause = async () => {
         if (!accessToken) return;
         // 不要從url帶了 改曾param
-        const result = await fetch(`/api/spotify-pause`, {
+        const result = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.player}${playerLink.pause}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -102,11 +102,18 @@ export default function HomeComponent() {
         });
     }
 
+    useEffect(() => {
+        const test = async () => {
+
+        }
+        test();
+    }, []);
+
     return (
         <>
             <div>
                 <div>
-                    <a href="/api/spotify-login">Login with Spotify</a>
+                    <Link href={`${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.auth}${authLink.login}`}>Login with Spotify</Link>
                 </div>
                 <div>
                     <button onClick={handleGetMe}>Get Me</button>
