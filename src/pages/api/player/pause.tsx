@@ -1,22 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import apiHttpsUtils from '@/utils/apiHttpsUtils';
+
 /**
  * api/player/pause.tsx 暫停播放
  * @param req 
  * @param res 
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { token, activeDeviceId } = req.body;
+    const { activeDeviceId } = req.body;
     try {
-        const spotifyResponse = await fetch('https://api.spotify.com/v1/me/player/pause', {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`
+        await apiHttpsUtils .httpFetchPutWithToken({
+            url: 'https://api.spotify.com/v1/me/player/pause',
+            body: {
+                device_id: activeDeviceId,
             },
         });
-        if (!spotifyResponse.ok) {
-            throw new Error(`Error: ${spotifyResponse.status}`);
-        }
-        res.status(200).json({ paused: true }); // 這個就會回傳給前端
+        res.status(200).json({ message: 'success' });
     } catch (error) {
         console.error('Spotify API error:', error);
         res.status(500).json({ message: 'Internal server error' });

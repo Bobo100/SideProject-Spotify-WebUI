@@ -1,25 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import apiHttpsUtils from '@/utils/apiHttpsUtils';
+import processUtils from '@/utils/processUtils';
+
 /**
  * api/playlist/playlists.tsx 取得使用者的歌單
  * @param req 
  * @param res 
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { token, id } = req.body;
+    const { id } = req.body;
     try {
-        // https://api.spotify.com/v1/users/{user_id}/playlists
-        const spotifyResponse = await fetch('https://api.spotify.com/v1/users/' + id + '/playlists', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const spotifyResponse = await apiHttpsUtils .getWithToken({
+            url: 'https://api.spotify.com/v1/users/' + id + '/playlists'
         });
-
-        if (!spotifyResponse.ok) {
-            throw new Error(`Error: ${spotifyResponse.status}`);
-        }
-
-        const data = await spotifyResponse.json();
-        res.status(200).json(data); // 這個就會回傳給前端
+        await processUtils.processResponseAndReturn(spotifyResponse, res);
     } catch (error) {
+        console.error('Spotify API error:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }

@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import apiHttpsUtils from '@/utils/apiHttpsUtils';
+
 /**
  * api/spotify-play.tsx 播放歌曲
  * @param req 
  * @param res 
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { token, activeDeviceId, uris } = req.body;
+    const { activeDeviceId, uris } = req.body;
     try {
         // {
         //     "context_uri": "spotify:album:5ht7ItJgpBH7W6vJ5BqpPr",
@@ -14,20 +16,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         //     },
         //     "position_ms": 0
         // }
-        const spotifyResponse = await fetch('https://api.spotify.com/v1/me/player/play', {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`
+        await apiHttpsUtils.httpFetchPutWithToken({
+            url: 'https://api.spotify.com/v1/me/player/play',
+            body: {
+                // uris,
+                device_id: activeDeviceId,
             },
-            // 額外
-            body: JSON.stringify({
-                // uris: ['spotify:track:6rqhFgbbKwnb9MLmUQDhG6'],
-            }),
         });
-        if (!spotifyResponse.ok) {
-            throw new Error(`Error: ${spotifyResponse.status}`);
-        }
-        res.status(200).json({ playing: true }); // 這個就會回傳給前端
+        res.status(200).json({ message: 'success' });
     } catch (error) {
+        console.error('Spotify API error:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
