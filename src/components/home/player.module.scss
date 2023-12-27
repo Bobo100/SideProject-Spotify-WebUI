@@ -1,0 +1,199 @@
+@import "@/styles/variables.module.scss";
+
+// ----------- 主區域右邊 點選(清單) ------------
+@mixin musicMain_right_container($backgroundColor, $borderColor, $scrollbarThumbColor) {
+    flex: 1 1 70%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: $backgroundColor;
+    border: 1px solid $borderColor;
+
+    &::-webkit-scrollbar {
+        border-radius: 10px;
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: $scrollbarThumbColor;
+    }
+
+    &::-webkit-scrollbar-track {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        background-color: $backgroundColor;
+    }
+
+    @media (max-width: $width-md) {
+        max-height: 300px;
+    }
+}
+
+.playerList_container_light {
+    @include musicMain_right_container($surface-variant-color, $outline-color, $primary-color);
+}
+
+.playerList_container_dark {
+    @include musicMain_right_container($surface-variant-color-dark, $outline-color-dark, $primary-color-dark);
+}
+
+@mixin playerListTop($backgroundColor, $borderColor) {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px 10px 0 0;
+    background-color: $backgroundColor;
+    border-bottom: 1px solid $borderColor;
+
+    @media (max-width: $width-sm) {
+        padding: 10px;
+    }
+}
+
+.playerList_top_light {
+    @include playerListTop($tertiary-container-color, $outline-color);
+}
+
+.playerList_top_dark {
+    @include playerListTop($tertiary-container-color-dark, $outline-color-dark);
+}
+
+.playerList_top_search_light,
+.playerList_top_search_dark {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    padding-left: 0;
+}
+
+.playerList_top_search_icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    margin: 0 10px;
+}
+
+@mixin playerListTopSearchInput($backgroundColor, $borderColor) {
+    padding: 10px;
+    padding-left: 40px;
+    width: auto;
+    background-color: rgba($backgroundColor, 0.5);
+    border: 1px solid $borderColor;
+    border-radius: 5px;
+
+    @media (max-width: $width-sm) {
+        max-width: 200px;
+    }
+}
+
+.playerList_top_search_input_light {
+    @include playerListTopSearchInput(rgb(243, 189, 205), $outline-color);
+}
+
+.playerList_top_search_input_dark {
+    @include playerListTopSearchInput(rgb(2, 2, 2), $outline-color-dark);
+}
+
+@mixin playerListTopSearchButton($backgroundColor, $borderColor) {
+    padding: 10px;
+    margin: 0 5px;
+    width: 100px;
+    background-color: rgba($backgroundColor, 0.5);
+    border: 1px solid $borderColor;
+    border-radius: 5px;
+    cursor: pointer;
+
+    @media (max-width: $width-sm) {
+        width: 75px;
+    }
+
+    &:not(.disabled):hover {
+        background-color: rgba($backgroundColor, 0.8);
+    }
+}
+
+.playerList_top_search_button_light {
+    @include playerListTopSearchButton(rgb(255, 216, 228), $outline-color);
+}
+
+.playerList_top_search_button_dark {
+    @include playerListTopSearchButton(rgb(2, 2, 2), $outline-color-dark);
+}
+
+%playerList_bottom {
+    flex: 1 1 auto;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+
+    @media (max-width: $width-sm) {
+        padding: 10px;
+    }
+}
+
+.playerList_bottom_light {
+    @extend %playerList_bottom;
+}
+
+.playerList_bottom_dark {
+    @extend %playerList_bottom;
+}
+
+.playerList_bottom_item {
+    display: flex;
+    align-items: center;
+
+    margin: 10px 0;
+
+    & > div {
+        padding: 0 10px;
+
+        &:first-child {
+            padding-left: 0;
+        }
+    }
+}
+
+.playerList_bottom_item_index {
+    width: 50px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.playerList_bottom_item_image {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
+
+.playerList_bottom_item_info {
+    flex: 1 1 40%;
+
+    .playerList_bottom_item_songName {
+        cursor: pointer;
+    }
+
+    .playerList_bottom_item_singer {
+        cursor: pointer;
+    }
+}
+
+.playerList_bottom_item_albumName {
+    flex: 1 1 40%;
+    cursor: pointer;
+
+    @media (max-width: $width-md) {
+        display: none;
+    }
+}
+
+.disabled {
+    cursor: not-allowed;
+}

@@ -1,15 +1,29 @@
-export interface AsyncState {
-    userId: number
-    id: number
-    title: string
-    completed: boolean
-    isLoading: boolean
+// ---------------------------------音樂---------------------------------
+export interface MusicData {
+    song_name: string;
+    singer: string[];
+    singer_image: string[];
+    song_url: string;
+    album_image: string;
+    album_name: string;
+    created_at: string;
+    favorite_list: string[];
+    thoughts: string; // 這部分要想想
 }
 
-export const asyncInitialState: AsyncState = {
-    userId: 0,
-    id: 0,
-    title: '',
-    completed: true,
-    isLoading: false
+export interface MusicDataArrayProps {
+    musicData: MusicData[];
+}
+
+// 正在播放的歌曲
+export interface listeningState {
+    listeningList: string[];
+    playingIndex?: number;
+}
+
+export const listeningInitialState: listeningState = {
+    listeningList: [
+        './music/example.mp3',
+    ],
+    playingIndex: 0
 }

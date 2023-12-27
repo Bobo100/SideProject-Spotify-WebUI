@@ -1,85 +1,127 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { routeLink, authLink, userLink, playlistLink, playerLink } from "@/utils/routeLink";
-import Link from "next/link";
-import httpsUtils from "@/utils/httpsUtils";
-
+// https://dev.to/documatic/building-a-music-player-in-react-2aa4 可以參考這個來寫
+import styles from './homeComponent.module.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { useMemo, useRef, useState } from 'react';
+import { MusicData, listeningState } from '../redux/state/stateType';
+import { getThemeClassName } from '@/utils/getThemeClassName';
+import { useTheme } from 'next-themes';
+import { useAppDispatch, useAppSelector } from '../redux/hook/hook';
+import { clickFavoriteList, getPlayingData, setPlayingIndex } from '../redux/slice/listeningSlice';
+import { playerlistType } from '@/utils/playerlistType';
+import _isEqual from 'lodash/isEqual';
+import Search from './search';
+import PlayerList from './player';
+import SelectList from './selectList';
 export default function HomeComponent() {
-    const [activeDeviceId, setActiveDeviceId] = useState<string>();
-    const [me, setMe] = useState<any>();
-    const router = useRouter();
-    useEffect(() => {
-        const getAccessToken = async () => {
-            const accessToken = router.query.accessToken as string;
-            if (accessToken) {
-                router.replace('/');
-            }
-        }
-        getAccessToken();
-    }, [router]);
 
-    const handleGetMe = async () => {
-        const result = await httpsUtils.post({ url: `${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.user}${userLink.profile}` });
-        setMe(result);
+    const { theme } = useTheme();
+    const [view, setView] = useState(playerlistType.playlist);
+
+    const handleSetView = (view: string) => {
+        setView(view);
     }
-
-    const handleGetMePlaylists = async () => {
-        if (!me) return;
-        const { id } = me;
-        const result = await httpsUtils.post({ url: `${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.playlist}${playlistLink.playlists}`, body: { id } });
-        console.log(result)
-    }
-
-    const handleGetDevices = async () => {
-        const result = await httpsUtils.post({ url: `${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.player}${playerLink.devices}` });
-        console.log(result)
-        // 會是一個array找到裡面is_active為true的那個
-        const activeDevice = result.devices.find((device: any) => device.is_active);
-        // console.log(activeDevice)
-        const deviceId = activeDevice.id;
-        setActiveDeviceId(deviceId);
-    }
-
-    const handlePlay = async () => {        
-        await httpsUtils.post({
-            url: `${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.player}${playerLink.play}`,
-            body: {
-                activeDeviceId,
-                // uris: ['spotify:track:6rqhFgbbKwnb9MLmUQDhG6']
-            }
-        });
-    }
-
-    const handlePause = async () => {
-        await httpsUtils.post({ url: `${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.player}${playerLink.pause}`, body: { activeDeviceId } });
-    }
-
 
     return (
-        <>
-            <div>
-                <div>
-                    <Link href={`${process.env.NEXT_PUBLIC_BASE_API_URL}${routeLink.auth}${authLink.login}`}>Login with Spotify</Link>
+        <div className={styles.container}>
+            <div className={styles.musicMain_container}>
+                {/* 左邊區域 音樂清單 */}
+                <div className={`${getThemeClassName("musicList_container", styles, theme)}`}>
+                    <h1>功能列表</h1>
+                    <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.search)}>搜尋Search</div>
+                    <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.player)}>當前播放清單</div>
+                    <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.playlist)}>當前歌單</div>
                 </div>
-                <div>
-                    <button onClick={handleGetMe}>Get Me</button>
-                </div>
-                <div>
-                    <button onClick={handleGetMePlaylists}>Get Me Playlists</button>
-                </div>
-                <div>
-                    {me && me.display_name}
-                </div>
-                <div>
-                    <button onClick={handleGetDevices}>Get Devices</button>
-                </div>
-                <div>
-                    <button onClick={handlePlay}>Play</button>
-                </div>
-                <div>
-                    <button onClick={handlePause}>Pause</button>
+                {/* 右邊區域 歌單 / 歌曲 / 歌手 */}
+                {_isEqual(view, playerlistType.search) && <Search />}
+                {_isEqual(view, playerlistType.playlist) && <PlayerList />}
+                {_isEqual(view, playerlistType.playlist) && <SelectList />}
+            </div>
+            {/* 最下方 音樂播放器 */}
+            <div className={getThemeClassName("musicPlayer_container", styles)}>
+                <div className={styles.musicPlayer}>
+                    <div className={styles.musicPlayer_left}>
+                        <div>圖片</div>
+                        <div>
+                            <div>歌曲名字</div>
+                            <div>歌手名字</div>
+                        </div>
+                        <FontAwesomeIcon icon={fas.faHeart} />
+                    </div>
+
+                    <div className={styles.musicPlayer_center}>
+                        <div className={styles.musicPlayer_center_top}>
+                            <FontAwesomeIcon icon={fas.faShuffle} />
+                            <FontAwesomeIcon icon={fas.faBackward} />
+                            {/* {isPlaying ? <FontAwesomeIcon icon={fas.faPause} onClick={handlePlayPause} /> : <FontAwesomeIcon icon={fas.faPlay} onClick={handlePlayPause} />} */}
+                            <FontAwesomeIcon icon={fas.faForward} />
+                            <FontAwesomeIcon icon={fas.faRedo} />
+                        </div>
+                        <div className={styles.musicPlayer_center_bottom}>
+                            <div className={styles.musicPlayer_center_container}>
+                                {/* <audio ref={audioRef} src={playingList.listeningList[playingList.playingIndex ? playingList.playingIndex : 0]} onTimeUpdate={handleTimeUpdate}
+                                />
+                                <input type="range" min="0" max={Math.ceil(audioRef.current?.duration as number ? audioRef.current?.duration as number : 0)}
+                                    value={currentTime}
+                                    className={getThemeClassName("progressBar", styles, theme)}
+                                    title="Seek to a position in the audio"
+                                    ref={progressBarRef}
+                                    onChange={(e) => {
+                                        setCurrentTime(e.target.value);
+                                        if (audioRef.current)
+                                            audioRef.current.currentTime = e.target.value as unknown as number;
+                                    }}
+                                /> */}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={styles.musicPlayer_right}>
+                        <FontAwesomeIcon icon={fas.faMusic} />
+                        <FontAwesomeIcon icon={fas.faBars} />
+                        {/* {isMute ?
+                            <FontAwesomeIcon icon={fas.faVolumeMute} onClick={() => {
+                                setVolume(lastVolume);
+                                setIsMute(false)
+                                if (audioRef.current) {
+                                    audioRef.current.volume = lastVolume as unknown as number / 100;
+                                }
+                            }}
+                            />
+                            :
+                            <FontAwesomeIcon icon={fas.faVolumeUp} onClick={() => {
+                                setLastVolume(volume);
+                                setVolume("0");
+                                setIsMute(true)
+                                if (audioRef.current) {
+                                    audioRef.current.volume = 0;
+                                }
+                            }} />
+                        } */}
+                        <input type="range" min="0" max="100"
+                            // value={volume}
+                            className={getThemeClassName("volumeBar", styles, theme)}
+                            title="Volume"
+                        // onChange={(e) => {
+                        //     setVolume(e.target.value);
+                        //     if (e.target.value === "0") {
+                        //         setIsMute(true);
+                        //         if (audioRef.current) {
+                        //             audioRef.current.volume = 0;
+                        //         }
+                        //     }
+                        //     else {
+                        //         setIsMute(false);
+                        //         if (audioRef.current) {
+                        //             audioRef.current.volume = e.target.value as unknown as number / 100;
+                        //         }
+                        //     }
+                        // }}
+                        />
+                    </div>
                 </div>
             </div>
-        </>
+
+        </div >
     )
 }

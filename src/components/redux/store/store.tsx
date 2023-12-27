@@ -1,10 +1,9 @@
 // components/redux/store/store.tsx
 import { configureStore } from '@reduxjs/toolkit'
-import async from '../slice/asyncSlice'
-
+import listeningSlice from '../slice/listeningSlice'
 export const store = configureStore({
     reducer: {
-        async
+        listening: listeningSlice
     },
     // middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     //     serializableCheck: false
