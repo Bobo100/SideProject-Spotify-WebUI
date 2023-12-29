@@ -5,6 +5,7 @@ import { getThemeClassName } from "@/utils/getThemeClassName";
 import { useTheme } from "next-themes";
 import { playerlistType } from '@/utils/playerlistType';
 import _isEqual from 'lodash/isEqual';
+import httpsUtils from "@/utils/httpsUtils";
 
 type ListComponentProps = {
     data: filterSearchType[]
@@ -13,6 +14,17 @@ type ListComponentProps = {
 
 const ListComponent = ({ data, viewType }: ListComponentProps) => {
     const { theme } = useTheme();
+    const handlePlay = async (uri: string) => {
+        await httpsUtils.post({
+            url: '/api/player/play',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uri
+            })
+        })
+    }
     return data.map((item, index) => {
         return (
             <div key={`${item.name} ${index}`} className={styles.bottom_item_container}>
@@ -37,6 +49,9 @@ const ListComponent = ({ data, viewType }: ListComponentProps) => {
                 </div>
                 {_isEqual(viewType, playerlistType.search) &&
                     <div className={styles.bottom_item_control}>
+                        <button className={getThemeClassName("bottom_item_control_button", styles, theme)}
+                            onClick={() => handlePlay(item.uri)}
+                        >播放</button>
                         <button className={getThemeClassName("bottom_item_control_button", styles, theme)}>插歌</button>
                         <button className={getThemeClassName("bottom_item_control_button", styles, theme)}>加入</button>
                     </div>

@@ -1,7 +1,6 @@
 import { useTheme } from "next-themes";
 import { getThemeClassName } from "@/utils/getThemeClassName";
 import styles from "./search.module.scss";
-import ImageWrapper from "../common/ImageWrapper/ImageWrapper";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'

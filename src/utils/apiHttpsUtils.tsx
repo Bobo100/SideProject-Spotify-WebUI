@@ -112,18 +112,32 @@ const utils = {
   /**
    * 帶有token的put
    */
+
+  //   curl --request PUT \
+  //   --url https://api.spotify.com/v1/me/player/play \
+  //   --header 'Authorization: Bearer 1POdFZRZbvb...qqillRxMr2z' \
+  //   --header 'Content-Type: application/json' \
+  //   --data '{
+  //     "context_uri": "spotify:album:5ht7ItJgpBH7W6vJ5BqpPr",
+  //     "offset": {
+  //         "position": 5
+  //     },
+  //     "position_ms": 0
+  // }'
   httpFetchPutWithToken: async (props: postProps) => {
     const { url, headers = {}, body = {} } = props;
     await connectToDatabase();
     const { access_token } = await mongoDbUtils.getTokens();
-    await fetch(url, {
+    const spotifyResponse = await fetch(url, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${access_token}`,
         ...headers,
       },
-      body: body,
+      body: JSON.stringify(body),
     });
+    // const result = await spotifyResponse.json();
+    // console.log("result", result);
     return;
   },
 };

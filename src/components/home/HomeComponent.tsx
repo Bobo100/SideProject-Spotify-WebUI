@@ -2,7 +2,7 @@
 import styles from './homeComponent.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MusicData, listeningState } from '../redux/state/stateType';
 import { getThemeClassName } from '@/utils/getThemeClassName';
 import { useTheme } from 'next-themes';
@@ -12,16 +12,55 @@ import { playerlistType } from '@/utils/playerlistType';
 import _isEqual from 'lodash/isEqual';
 import Search from './search';
 import PlayerList from './player';
-import SelectList from './selectList';
+import SelectList from './playlist';
 import Link from 'next/link';
+import httpsUtils from '@/utils/httpsUtils';
+import ImageWrapper from '../common/ImageWrapper/ImageWrapper';
 export default function HomeComponent() {
 
     const { theme } = useTheme();
     const [view, setView] = useState(playerlistType.playlist);
     const [mute, setMute] = useState(false);
+    const [playing, setPlaying] = useState(false);
+    const [currentInfo, setCurrentInfo] = useState<MusicData>();
+
+    const getCurrentSongInfo = async () => {
+        const response = await httpsUtils.post({
+            url: '/api/player/current',
+        });
+        if (!response) return null;
+
+        return {
+            song_name: response.item.name,
+            author: response.item.album.artists.map((item: any) => item.name),
+            album_image: response.item.album.images[0].url,
+        };
+    };
+
+    // 改成要一個計時，每幾秒去抓一次目前的歌曲資訊 但又要記得 一次只會跑一次 不要因為其他更新就又跑一次
+    useEffect(() => {
+        const timerId = setInterval(async () => {
+            const info = await getCurrentSongInfo();
+            if (info) {
+                setCurrentInfo(info);
+            }
+        }, 5000);
+
+        return () => {
+            clearInterval(timerId);
+        };
+    }, []);
 
     const handleSetView = (view: string) => {
         setView(view);
+    }
+
+    const handlePlayPause = () => {
+        setPlaying(!playing);
+    }
+
+    const handleMute = () => {
+        setMute(!mute);
     }
 
     return (
@@ -43,10 +82,21 @@ export default function HomeComponent() {
             <div className={getThemeClassName("musicPlayer_container", styles)}>
                 <div className={styles.musicPlayer}>
                     <div className={styles.musicPlayer_left}>
-                        <div>圖片</div>
+                        {currentInfo?.album_image &&
+                            <div className={styles.musicPlayer_image}>
+                                <ImageWrapper
+                                    src={currentInfo?.album_image} alt="album_image"
+                                    fill
+                                    style={{ objectFit: "cover" }}
+                                    sizes='100vw'
+                                />
+                            </div>
+                        }
                         <div>
-                            <div>歌曲名字</div>
-                            <div>歌手名字</div>
+                        </div>
+                        <div>
+                            <div>{currentInfo?.song_name}</div>
+                            <div>{currentInfo?.author}</div>
                         </div>
                         <FontAwesomeIcon icon={fas.faHeart} />
                     </div>
@@ -55,7 +105,7 @@ export default function HomeComponent() {
                         <div className={styles.musicPlayer_center_top}>
                             <FontAwesomeIcon icon={fas.faShuffle} />
                             <FontAwesomeIcon icon={fas.faBackward} />
-                            {/* {isPlaying ? <FontAwesomeIcon icon={fas.faPause} onClick={handlePlayPause} /> : <FontAwesomeIcon icon={fas.faPlay} onClick={handlePlayPause} />} */}
+                            {playing ? <FontAwesomeIcon icon={fas.faPause} onClick={handlePlayPause} /> : <FontAwesomeIcon icon={fas.faPlay} onClick={handlePlayPause} />}
                             <FontAwesomeIcon icon={fas.faForward} />
                             <FontAwesomeIcon icon={fas.faRedo} />
                         </div>
