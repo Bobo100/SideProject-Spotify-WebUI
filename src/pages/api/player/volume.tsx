@@ -2,26 +2,18 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import apiHttpsUtils from '@/utils/apiHttpsUtils';
 
 /**
- * api/spotify-play.tsx 播放歌曲
+ * api/player/volume.tsx 設定音量
  * @param req 
  * @param res 
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { uri } = req.body;
-    const body = {
-        offset: {
-            position: 0
-        },
-        position_ms: 0
-    } as any;
-    if (uri) {
-        body.context_uri = uri;
-    }
+    const { activeDeviceId, volume = 50 } = req.body;
     try {
         await apiHttpsUtils.httpFetchPutWithToken({
-            url: 'https://api.spotify.com/v1/me/player/play',
+            url: 'https://api.spotify.com/v1/me/player/volume',
             body: {
-                ...body,
+                device_id: activeDeviceId,
+                volume_percent: volume
             },
         });
         res.status(200).json({ message: 'success' });

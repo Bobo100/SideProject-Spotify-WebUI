@@ -13,7 +13,6 @@ type ListComponentProps = {
 
 const ListComponent = ({ data, viewType }: ListComponentProps) => {
     const { theme } = useTheme();
-    console.log(data)
     return data.map((item, index) => {
         return (
             <div key={`${item.name} ${index}`} className={styles.bottom_item_container}>

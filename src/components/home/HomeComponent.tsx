@@ -18,6 +18,7 @@ export default function HomeComponent() {
 
     const { theme } = useTheme();
     const [view, setView] = useState(playerlistType.playlist);
+    const [mute, setMute] = useState(false);
 
     const handleSetView = (view: string) => {
         setView(view);
@@ -32,8 +33,6 @@ export default function HomeComponent() {
                     <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.search)}>搜尋Search</div>
                     <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.player)}>當前播放清單</div>
                     <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.playlist)}>當前歌單</div>
-                    {/* await httpsUtils.get({ url: refreshLink }); */}
-                    <Link href="/api/auth/refresh">Refresh</Link>
                 </div>
                 {/* 右邊區域 歌單 / 歌曲 / 歌手 */}
                 {_isEqual(view, playerlistType.search) && <Search />}
@@ -82,44 +81,17 @@ export default function HomeComponent() {
                     <div className={styles.musicPlayer_right}>
                         <FontAwesomeIcon icon={fas.faMusic} />
                         <FontAwesomeIcon icon={fas.faBars} />
-                        {/* {isMute ?
-                            <FontAwesomeIcon icon={fas.faVolumeMute} onClick={() => {
-                                setVolume(lastVolume);
-                                setIsMute(false)
-                                if (audioRef.current) {
-                                    audioRef.current.volume = lastVolume as unknown as number / 100;
-                                }
-                            }}
+                        {mute ?
+                            <FontAwesomeIcon icon={fas.faVolumeMute}
                             />
                             :
-                            <FontAwesomeIcon icon={fas.faVolumeUp} onClick={() => {
-                                setLastVolume(volume);
-                                setVolume("0");
-                                setIsMute(true)
-                                if (audioRef.current) {
-                                    audioRef.current.volume = 0;
-                                }
-                            }} />
-                        } */}
+                            <FontAwesomeIcon icon={fas.faVolumeUp} />
+                        }
                         <input type="range" min="0" max="100"
                             // value={volume}
                             className={getThemeClassName("volumeBar", styles, theme)}
                             title="Volume"
-                        // onChange={(e) => {
-                        //     setVolume(e.target.value);
-                        //     if (e.target.value === "0") {
-                        //         setIsMute(true);
-                        //         if (audioRef.current) {
-                        //             audioRef.current.volume = 0;
-                        //         }
-                        //     }
-                        //     else {
-                        //         setIsMute(false);
-                        //         if (audioRef.current) {
-                        //             audioRef.current.volume = e.target.value as unknown as number / 100;
-                        //         }
-                        //     }
-                        // }}
+
                         />
                     </div>
                 </div>

@@ -196,6 +196,11 @@
 .musicPlayer {
     display: flex;
     justify-content: space-between;
+
+    @media (max-width: $width-md) {
+        display: flex;
+        flex-direction: column;
+    }
 }
 
 .musicPlayer_left,
@@ -220,13 +225,13 @@
     flex: 0 0 30%;
     // width: 30%;
     @media screen and (max-width: $width-md) {
-        display: none;
+        // display: none;
     }
 }
 
 .musicPlayer_left {
     @media screen and (max-width: $width-md) {
-        display: none;
+        // display: none;
     }
 }
 

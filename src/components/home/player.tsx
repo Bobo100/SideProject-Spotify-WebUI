@@ -21,8 +21,8 @@ export default function PlayerList() {
             const response = await httpsUtils.get({
                 url: '/api/player/queue'
             });
+            if (!response) return
             const result = processUtils.filterQueue(response)
-            console.log(result);
             setQuery(result)
         }
         getQueue()

@@ -2,26 +2,17 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import apiHttpsUtils from '@/utils/apiHttpsUtils';
 
 /**
- * api/spotify-play.tsx 播放歌曲
+ * api/player/skipNext.tsx 跳下一首
  * @param req 
  * @param res 
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { uri } = req.body;
-    const body = {
-        offset: {
-            position: 0
-        },
-        position_ms: 0
-    } as any;
-    if (uri) {
-        body.context_uri = uri;
-    }
+    const { activeDeviceId } = req.body;
     try {
         await apiHttpsUtils.httpFetchPutWithToken({
-            url: 'https://api.spotify.com/v1/me/player/play',
+            url: 'https://api.spotify.com/v1/me/player/next',
             body: {
-                ...body,
+                device_id: activeDeviceId,
             },
         });
         res.status(200).json({ message: 'success' });
