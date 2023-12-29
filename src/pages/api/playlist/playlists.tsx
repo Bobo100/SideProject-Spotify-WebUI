@@ -10,7 +10,7 @@ import processUtils from '@/utils/processUtils';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { id } = req.body;
     try {
-        const spotifyResponse = await apiHttpsUtils .getWithToken({
+        const spotifyResponse = await apiHttpsUtils.getWithToken({
             url: 'https://api.spotify.com/v1/users/' + id + '/playlists'
         });
         await processUtils.processResponseAndReturn(spotifyResponse, res);

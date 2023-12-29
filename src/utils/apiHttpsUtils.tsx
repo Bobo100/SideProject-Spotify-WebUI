@@ -41,11 +41,8 @@ const utils = {
     if (_isEqual(errorStatus, 401)) {
       await httpsUtils.get({ url: refreshLink });
       await utils.postWithToken(props);
-    } else if (errorStatus) {
-      return data;
-    } else {
-      return data;
     }
+    return data;
   },
   /**
    * 沒帶token的post
@@ -65,11 +62,8 @@ const utils = {
     if (_isEqual(errorStatus, 401)) {
       await httpsUtils.get({ url: refreshLink });
       await utils.post(props);
-    } else if (errorStatus) {
-      return data;
-    } else {
-      return data;
     }
+    return data;
   },
   /**
    * 帶有token的get
@@ -92,10 +86,6 @@ const utils = {
     if (_isEqual(errorStatus, 401)) {
       await httpsUtils.get({ url: refreshLink });
       await utils.getWithToken(props);
-    } else if (errorStatus) {
-      return data;
-    } else {
-      return data;
     }
     return data;
   },
@@ -116,11 +106,8 @@ const utils = {
     if (_isEqual(errorStatus, 401)) {
       await httpsUtils.get({ url: refreshLink });
       await utils.get(props);
-    } else if (errorStatus) {
-      return data;
-    } else {
-      return data;
     }
+    return data;
   },
   /**
    * 帶有token的put

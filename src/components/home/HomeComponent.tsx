@@ -13,6 +13,7 @@ import _isEqual from 'lodash/isEqual';
 import Search from './search';
 import PlayerList from './player';
 import SelectList from './selectList';
+import Link from 'next/link';
 export default function HomeComponent() {
 
     const { theme } = useTheme();
@@ -31,10 +32,12 @@ export default function HomeComponent() {
                     <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.search)}>搜尋Search</div>
                     <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.player)}>當前播放清單</div>
                     <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.playlist)}>當前歌單</div>
+                    {/* await httpsUtils.get({ url: refreshLink }); */}
+                    <Link href="/api/auth/refresh">Refresh</Link>
                 </div>
                 {/* 右邊區域 歌單 / 歌曲 / 歌手 */}
                 {_isEqual(view, playerlistType.search) && <Search />}
-                {_isEqual(view, playerlistType.playlist) && <PlayerList />}
+                {_isEqual(view, playerlistType.player) && <PlayerList />}
                 {_isEqual(view, playerlistType.playlist) && <SelectList />}
             </div>
             {/* 最下方 音樂播放器 */}

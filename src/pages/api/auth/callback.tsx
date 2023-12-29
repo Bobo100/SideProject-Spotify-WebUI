@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { routeLink, authLink } from '@/utils/routeLink';
+import mongoDbUtils from '@/utils/mongoDbUtils';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const code = req.query.code || null;
     if (code) {
@@ -21,8 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 body: params
             });
             const data = await result.json();
-            const { access_token } = data;
-            res.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/?accessToken=${access_token}`);
+            const { access_token, refresh_token } = data;
+            await mongoDbUtils.updateTokens({
+                access_token: access_token,
+                refresh_token: refresh_token,
+            });
+            res.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}`);
         } catch (error) {
         }
     } else {

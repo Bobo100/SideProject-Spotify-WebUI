@@ -9,6 +9,7 @@ const utils = {
         images: item.album.images[item.album.images.length - 2].url,
         external_url: item.external_urls.spotify,
         uri: item.uri,
+        author: item.artists.map((artist: any) => artist.name).join(", "),
       };
     });
     const prevUrl = data.tracks.previous;
@@ -24,6 +25,17 @@ const utils = {
       offset,
       total,
     };
+  },
+  filterQueue: (data: any) => {
+    const result = data.queue.map((item: any) => {
+      return {
+        name: item.name,
+        images: item.album.images[item.album.images.length - 2].url,
+        external_url: item.external_urls.spotify,
+        uri: item.uri,
+      }
+    })
+    return result
   },
   processResponseAndReturn: async (responseData: any, res: NextApiResponse) => {
     const errorStatus = _get(responseData, "error.status");

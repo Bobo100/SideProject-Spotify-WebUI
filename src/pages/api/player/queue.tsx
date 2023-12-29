@@ -10,8 +10,8 @@ import processUtils from '@/utils/processUtils';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         const spotifyResponse = await apiHttpsUtils.getWithToken({
-            url: 'https://api.spotify.com/v1/me/player/devices'
-        });
+            url: 'https://api.spotify.com/v1/me/player/queue'
+        });        
         await processUtils.processResponseAndReturn(spotifyResponse, res);
     } catch (error) {
         console.error('Spotify API error:', error);

@@ -1,69 +1,7 @@
 @import "@/styles/variables.module.scss";
 
-// ----------- 主區域右邊 點選(清單) ------------
-@mixin musicMain_right_container($backgroundColor, $borderColor, $scrollbarThumbColor) {
-    flex: 1 1 70%;
-    display: flex;
-    flex-direction: column;
-    border-radius: 10px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background-color: $backgroundColor;
-    border: 1px solid $borderColor;
-
-    &::-webkit-scrollbar {
-        border-radius: 10px;
-        width: 5px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        background-color: $scrollbarThumbColor;
-    }
-
-    &::-webkit-scrollbar-track {
-        margin-top: 10px;
-        margin-bottom: 10px;
-        border-radius: 10px;
-        background-color: $backgroundColor;
-    }
-
-    @media (max-width: $width-md) {
-        max-height: 300px;
-    }
-}
-
-.searchList_container_light {
-    @include musicMain_right_container($surface-variant-color, $outline-color, $primary-color);
-}
-
-.searchList_container_dark {
-    @include musicMain_right_container($surface-variant-color-dark, $outline-color-dark, $primary-color-dark);
-}
-
-@mixin searchListTop($backgroundColor, $borderColor) {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    border-radius: 10px 10px 0 0;
-    background-color: $backgroundColor;
-    border-bottom: 1px solid $borderColor;
-
-    @media (max-width: $width-sm) {
-        padding: 10px;
-    }
-}
-
-.searchList_top_light {
-    @include searchListTop($tertiary-container-color, $outline-color);
-}
-
-.searchList_top_dark {
-    @include searchListTop($tertiary-container-color-dark, $outline-color-dark);
-}
-
-.searchList_top_search_light,
-.searchList_top_search_dark {
+.top_search_light,
+.top_search_dark {
     position: relative;
     display: flex;
     align-items: center;
@@ -71,7 +9,7 @@
     padding-left: 0;
 }
 
-.searchList_top_search_icon {
+.top_search_icon {
     position: absolute;
     width: 20px;
     height: 20px;
@@ -91,11 +29,11 @@
     }
 }
 
-.searchList_top_search_input_light {
+.top_search_input_light {
     @include searchListTopSearchInput(rgb(243, 189, 205), $outline-color);
 }
 
-.searchList_top_search_input_dark {
+.top_search_input_dark {
     @include searchListTopSearchInput(rgb(2, 2, 2), $outline-color-dark);
 }
 
@@ -117,81 +55,12 @@
     }
 }
 
-.searchList_top_search_button_light {
+.top_search_button_light {
     @include searchListTopSearchButton(rgb(255, 216, 228), $outline-color);
 }
 
-.searchList_top_search_button_dark {
+.top_search_button_dark {
     @include searchListTopSearchButton(rgb(2, 2, 2), $outline-color-dark);
-}
-
-%searchList_bottom {
-    flex: 1 1 auto;
-    padding: 20px;
-    border-radius: 0 0 10px 10px;
-
-    @media (max-width: $width-sm) {
-        padding: 10px;
-    }
-}
-
-.searchList_bottom_light {
-    @extend %searchList_bottom;
-}
-
-.searchList_bottom_dark {
-    @extend %searchList_bottom;
-}
-
-.searchList_bottom_item {
-    display: flex;
-    align-items: center;
-
-    margin: 10px 0;
-
-    & > div {
-        padding: 0 10px;
-
-        &:first-child {
-            padding-left: 0;
-        }
-    }
-}
-
-.searchList_bottom_item_index {
-    width: 50px;
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.searchList_bottom_item_image {
-    position: relative;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-}
-
-.searchList_bottom_item_info {
-    flex: 1 1 40%;
-
-    .searchList_bottom_item_songName {
-        cursor: pointer;
-    }
-
-    .searchList_bottom_item_singer {
-        cursor: pointer;
-    }
-}
-
-.searchList_bottom_item_albumName {
-    flex: 1 1 40%;
-    cursor: pointer;
-
-    @media (max-width: $width-md) {
-        display: none;
-    }
 }
 
 .disabled {

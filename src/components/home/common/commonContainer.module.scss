@@ -1,0 +1,81 @@
+@import "@/styles/variables.module.scss";
+
+// ----------- 主區域右邊 點選(清單) ------------
+@mixin musicMain_right_container($backgroundColor, $borderColor, $scrollbarThumbColor) {
+    flex: 1 1 70%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: $backgroundColor;
+    border: 1px solid $borderColor;
+
+    &::-webkit-scrollbar {
+        border-radius: 10px;
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: $scrollbarThumbColor;
+    }
+
+    &::-webkit-scrollbar-track {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        background-color: $backgroundColor;
+    }
+
+    @media (max-width: $width-md) {
+        max-height: 300px;
+    }
+}
+
+.container_light {
+    @include musicMain_right_container($surface-variant-color, $outline-color, $primary-color);
+}
+
+.container_dark {
+    @include musicMain_right_container($surface-variant-color-dark, $outline-color-dark, $primary-color-dark);
+}
+
+@mixin topContainer($backgroundColor, $borderColor) {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px 10px 0 0;
+    background-color: $backgroundColor;
+    border-bottom: 1px solid $borderColor;
+
+    @media (max-width: $width-sm) {
+        padding: 10px;
+    }
+}
+
+.topContainer_light {
+    @include topContainer($tertiary-container-color, $outline-color);
+}
+
+.topContainer_dark {
+    @include topContainer($tertiary-container-color-dark, $outline-color-dark);
+}
+
+%bottomContainer {
+    flex: 1 1 auto;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+
+    @media (max-width: $width-sm) {
+        padding: 10px;
+    }
+}
+
+.bottomContainer_light {
+    @extend %bottomContainer;
+}
+
+.bottomContainer_dark {
+    @extend %bottomContainer;
+}

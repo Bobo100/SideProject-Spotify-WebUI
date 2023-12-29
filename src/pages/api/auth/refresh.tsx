@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     Params.append("client_id", clientId!);
     Params.append("grant_type", "refresh_token");
     Params.append("refresh_token", refresh_token);
-    const spotifyResponse = await apiHttpsUtils .post({
+    const spotifyResponse = await apiHttpsUtils.post({
         url: "https://accounts.spotify.com/api/token",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: Params,
@@ -24,10 +24,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             access_token: new_access_token,
             refresh_token: new_refresh_token,
         });
-        // return reply.code(200).send(spotifyResponse);
         res.status(200).json(spotifyResponse);
     } else {
-        // return reply.code(500).send(spotifyResponse);
         res.status(500).json(spotifyResponse);
     }
 }

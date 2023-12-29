@@ -70,6 +70,7 @@
 .navbar_menu_active {
     @media screen and (max-width: $width-lg) {
         pointer-events: unset;
+        background-color: rgba(0, 0, 0, 0.5);
     }
 }
 

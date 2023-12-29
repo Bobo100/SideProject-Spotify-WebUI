@@ -9,4 +9,5 @@ export type filterSearchType = {
     images: string;
     external_url: string;
     uri: string;
+    author?: string[];
 };
