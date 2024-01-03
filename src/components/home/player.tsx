@@ -13,17 +13,31 @@ export default function Player() {
     const { theme } = useTheme();
     const [query, setQuery] = useState([] as filterSearchType[]);
 
+    const getQueue = async () => {
+        const response = await httpsUtils.get({
+            url: '/api/player/queue'
+        });
+        if (!response) return
+        const result = processUtils.filterQueue(response)
+        setQuery(result)
+    }
+
+    // 改成要一個計時，每幾秒去抓一次目前的歌曲資訊 但又要記得 一次只會跑一次 不要因為其他更新就又跑一次
     useEffect(() => {
-        const getQueue = async () => {
-            const response = await httpsUtils.get({
-                url: '/api/player/queue'
-            });
-            if (!response) return
-            const result = processUtils.filterQueue(response)
-            setQuery(result)
-        }
-        getQueue()
-    }, [])
+        const asyncFunc = async () => {
+            await getQueue();
+        };
+
+        asyncFunc();
+
+        const timerId = setInterval(async () => {
+            await getQueue();
+        }, 5000);
+
+        return () => {
+            clearInterval(timerId);
+        };
+    }, []);
 
     const bottomRender = useCallback(() => {
         return <ListComponent data={query} />

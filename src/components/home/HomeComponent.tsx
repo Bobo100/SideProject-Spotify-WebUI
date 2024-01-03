@@ -23,6 +23,7 @@ export default function HomeComponent() {
     const [mute, setMute] = useState(false);
     const [playing, setPlaying] = useState(false);
     const [currentInfo, setCurrentInfo] = useState<MusicData>();
+    const [volume, setVolume] = useState(0);
 
     const getCurrentSongInfo = async () => {
         const response = await httpsUtils.post({
@@ -39,6 +40,15 @@ export default function HomeComponent() {
 
     // 改成要一個計時，每幾秒去抓一次目前的歌曲資訊 但又要記得 一次只會跑一次 不要因為其他更新就又跑一次
     useEffect(() => {
+        const asyncFunc = async () => {
+            const info = await getCurrentSongInfo();
+            if (info) {
+                setCurrentInfo(info);
+            }
+        };
+
+        asyncFunc();
+
         const timerId = setInterval(async () => {
             const info = await getCurrentSongInfo();
             if (info) {
@@ -63,6 +73,23 @@ export default function HomeComponent() {
         setMute(!mute);
     }
 
+    //     curl --request PUT \
+    //   --url 'https://api.spotify.com/v1/me/player/volume?volume_percent=50' \
+    //   --header 'Authorization: Bearer 1POdFZRZbvb...qqillRxMr2z'
+
+    const handleVolume = async (volume: number) => {
+        await httpsUtils.post({
+            url: '/api/player/volume',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                volume
+            })
+        })
+        setVolume(volume);
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.musicMain_container}>
@@ -70,8 +97,8 @@ export default function HomeComponent() {
                 <div className={`${getThemeClassName("musicList_container", styles, theme)}`}>
                     <h1>功能列表</h1>
                     <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.search)}>搜尋Search</div>
-                    <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.player)}>當前播放清單</div>
-                    <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.playlist)}>當前歌單</div>
+                    <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.player)}>當前Queue</div>
+                    <div className={getThemeClassName("musicList_item", styles, theme)} onClick={() => handleSetView(playerlistType.playlist)}>歌單！！</div>
                 </div>
                 {/* 右邊區域 歌單 / 歌曲 / 歌手 */}
                 {_isEqual(view, playerlistType.search) && <Search />}
@@ -138,10 +165,12 @@ export default function HomeComponent() {
                             <FontAwesomeIcon icon={fas.faVolumeUp} />
                         }
                         <input type="range" min="0" max="100"
-                            // value={volume}
+                            value={volume}
                             className={getThemeClassName("volumeBar", styles, theme)}
                             title="Volume"
-
+                            onChange={(e) => {
+                                handleVolume(parseInt(e.target.value));
+                            }}
                         />
                     </div>
                 </div>

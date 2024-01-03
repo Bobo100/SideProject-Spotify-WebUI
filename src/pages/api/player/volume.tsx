@@ -7,12 +7,11 @@ import apiHttpsUtils from '@/utils/apiHttpsUtils';
  * @param res 
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { activeDeviceId, volume = 50 } = req.body;
+    const { volume = 50 } = req.body;
     try {
         await apiHttpsUtils.httpFetchPutWithToken({
             url: 'https://api.spotify.com/v1/me/player/volume',
             body: {
-                device_id: activeDeviceId,
                 volume_percent: volume
             },
         });
