@@ -39,7 +39,7 @@ const ListComponent = ({ data, viewType }: ListComponentProps) => {
                         />
                     </div>
                     <div className={styles.bottom_item_info}>
-                        <div className={styles.bottom_item_songName}
+                        <div className={styles.bottom_item_songName} onClick={() => handlePlay(item.uri)}
                         >{item.name}</div>
                         <div className={styles.bottom_item_author}
                         >{item.author}</div>

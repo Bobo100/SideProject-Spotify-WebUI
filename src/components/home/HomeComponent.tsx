@@ -1,5 +1,5 @@
 // https://dev.to/documatic/building-a-music-player-in-react-2aa4 可以參考這個來寫
-import styles from './HomeComponent.module.scss';
+import styles from './homeComponent.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -10,9 +10,9 @@ import { useAppDispatch, useAppSelector } from '../redux/hook/hook';
 import { clickFavoriteList, getPlayingData, setPlayingIndex } from '../redux/slice/listeningSlice';
 import { playerlistType } from '@/utils/playerlistType';
 import _isEqual from 'lodash/isEqual';
-import Search from './search';
-import PlayerList from './player';
-import SelectList from './playlist';
+import Search from './Search';
+import PlayerList from './Player';
+import SelectList from './Playlist';
 import Link from 'next/link';
 import httpsUtils from '@/utils/httpsUtils';
 import ImageWrapper from '../common/ImageWrapper/ImageWrapper';
@@ -20,6 +20,7 @@ import _throttle from 'lodash/throttle';
 import _isEmpty from 'lodash/isEmpty';
 import _get from 'lodash/get';
 import _isNil from 'lodash/isNil';
+import _ from 'lodash';
 
 export default function HomeComponent() {
 
@@ -30,6 +31,8 @@ export default function HomeComponent() {
     const [currentInfo, setCurrentInfo] = useState<MusicData>();
     const [activeDevice, setActiveDevice] = useState(null);
     const [volume, setVolume] = useState<number>(50);
+    const [duration, setDuration] = useState<number>(0);
+    const [progressPercent, setProgressPercent] = useState<number>(0);
 
     const getCurrentSongInfo = async () => {
         const response = await httpsUtils.get({
@@ -42,7 +45,16 @@ export default function HomeComponent() {
                 author: response.item.album.artists.map((item: any) => item.name),
                 album_image: response.item.album.images[0].url,
             });
-
+            if (!_isEqual(response.item.duration_ms, duration)) {
+                setDuration(response.item.duration_ms);
+            }
+            const percent = Math.floor(response.progress_ms / response.item.duration_ms * 100);
+            if (!_isEqual(percent, progressPercent)) {
+                setProgressPercent(percent);
+            }
+            if (!_isEqual(response.is_playing, playing)) {
+                setPlaying(response.is_playing);
+            }
         };
     }
 
@@ -56,7 +68,7 @@ export default function HomeComponent() {
 
         const timerId = setInterval(async () => {
             await getCurrentSongInfo();
-        }, 5000);
+        }, 1000);
 
         return () => {
             clearInterval(timerId);
@@ -111,6 +123,20 @@ export default function HomeComponent() {
         await getCurrentSongInfo();
     }
 
+    // const checkPlaying = async () => {
+    //     if (_isEqual(playing, false)) {
+    //         console.log('暫停中');
+    //     } else {
+    //         console.log('播放中');
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     checkPlaying();
+    // }, [playing]);
+
+
+
     const handlePlayPause = () => {
         if (playing) {
             handleThrottlePlay(false);
@@ -124,7 +150,7 @@ export default function HomeComponent() {
     const handleThrottlePlay = _throttle(async (play: boolean) => {
         if (play) {
             await httpsUtils.post({
-                url: '/api/player/pause',
+                url: '/api/player/resume',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -132,9 +158,10 @@ export default function HomeComponent() {
                     activeDeviceId: activeDevice,
                 })
             })
+
         } else {
             await httpsUtils.post({
-                url: '/api/player/resume',
+                url: '/api/player/pause',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -169,6 +196,20 @@ export default function HomeComponent() {
             })
         })
     }, 1000, { leading: true, trailing: false });
+
+    const handleTimeUpdate = async (percent: number) => {
+        const position_ms = Math.floor(percent * duration / 100);
+        await httpsUtils.post({
+            url: '/api/player/seek',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                activeDeviceId: activeDevice,
+                position_ms: position_ms
+            })
+        });
+    }
 
 
     return (
@@ -219,19 +260,17 @@ export default function HomeComponent() {
                         </div>
                         <div className={styles.musicPlayer_center_bottom}>
                             <div className={styles.musicPlayer_center_container}>
-                                {/* <audio ref={audioRef} src={playingList.listeningList[playingList.playingIndex ? playingList.playingIndex : 0]} onTimeUpdate={handleTimeUpdate}
-                                />
-                                <input type="range" min="0" max={Math.ceil(audioRef.current?.duration as number ? audioRef.current?.duration as number : 0)}
-                                    value={currentTime}
+                                {/* <audio ref={audioRef} src={playingList.listeningList[playingList.playingIndex ? playingList.playingIndex : 0]} onTimeUpdate={handleTimeUpdate}/> */}
+                                <input type="range" min="0" max={100}
+                                    value={progressPercent}
                                     className={getThemeClassName("progressBar", styles, theme)}
                                     title="Seek to a position in the audio"
-                                    ref={progressBarRef}
+                                    // ref={progressBarRef}
                                     onChange={(e) => {
-                                        setCurrentTime(e.target.value);
-                                        if (audioRef.current)
-                                            audioRef.current.currentTime = e.target.value as unknown as number;
+                                        setProgressPercent(e.target.value as unknown as number);
+                                        handleTimeUpdate(e.target.value as unknown as number);
                                     }}
-                                /> */}
+                                />
                             </div>
                         </div>
                     </div>

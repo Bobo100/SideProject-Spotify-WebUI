@@ -24,7 +24,7 @@ const utils = {
    * @param props
    * @returns
    */
-  postWithToken: async (props: postProps) => {
+  postWithToken: async (props: postProps): Promise<any> => {
     const { url, headers = {}, body = {} } = props;
     await connectToDatabase();
     const { access_token } = await mongoDbUtils.getTokens();
@@ -41,14 +41,16 @@ const utils = {
       const errorStatus = _get(data, "error.status");
       if (_isEqual(errorStatus, 401)) {
         await httpsUtils.get({ url: refreshLink });
-        await utils.postWithToken(props);
+        return await utils.postWithToken(props);
+
       }
       return data;
     } else {
       const errorStatus = _get(spotifyResponse, "error.status");
       if (_isEqual(errorStatus, 401)) {
         await httpsUtils.get({ url: refreshLink });
-        await utils.postWithToken(props);
+        return await utils.postWithToken(props);
+
       }
       return spotifyResponse;
     }
@@ -58,7 +60,7 @@ const utils = {
    * @param props
    * @returns
    */
-  post: async (props: postProps) => {
+  post: async (props: postProps): Promise<any> => {
     const { url, headers = {}, body = {} } = props;
     await connectToDatabase();
     const spotifyResponse = await fetch(url, {
@@ -71,14 +73,14 @@ const utils = {
       const errorStatus = _get(data, "error.status");
       if (_isEqual(errorStatus, 401)) {
         await httpsUtils.get({ url: refreshLink });
-        await utils.post(props);
+        return await utils.post(props);
       }
       return data;
     } else {
       const errorStatus = _get(spotifyResponse, "error.status");
       if (_isEqual(errorStatus, 401)) {
         await httpsUtils.get({ url: refreshLink });
-        await utils.post(props);
+        return await utils.post(props);
       }
       return spotifyResponse;
     }
@@ -88,7 +90,7 @@ const utils = {
    * @param props
    * @returns
    */
-  getWithToken: async (props: getProps) => {
+  getWithToken: async (props: getProps): Promise<any> => {
     const { url, headers = {} } = props;
     await connectToDatabase();
     const { access_token } = await mongoDbUtils.getTokens();
@@ -104,14 +106,14 @@ const utils = {
       const errorStatus = _get(data, "error.status");
       if (_isEqual(errorStatus, 401)) {
         await httpsUtils.get({ url: refreshLink });
-        await utils.getWithToken(props);
+        return await utils.getWithToken(props);
       }
       return data;
     } else {
       const errorStatus = _get(spotifyResponse, "error.status");
       if (_isEqual(errorStatus, 401)) {
         await httpsUtils.get({ url: refreshLink });
-        await utils.getWithToken(props);
+        return await utils.getWithToken(props);
       }
       return spotifyResponse;
     }
@@ -121,7 +123,7 @@ const utils = {
    * @param props
    * @returns
    */
-  get: async (props: getProps) => {
+  get: async (props: getProps): Promise<any> => {
     const { url, headers = {} } = props;
     await connectToDatabase();
     const spotifyResponse = await fetch(url, {
@@ -133,14 +135,15 @@ const utils = {
       const errorStatus = _get(data, "error.status");
       if (_isEqual(errorStatus, 401)) {
         await httpsUtils.get({ url: refreshLink });
-        await utils.get(props);
+        return await utils.get(props);
+
       }
       return data;
     } else {
       const errorStatus = _get(spotifyResponse, "error.status");
       if (_isEqual(errorStatus, 401)) {
         await httpsUtils.get({ url: refreshLink });
-        await utils.get(props);
+        return await utils.get(props);
       }
       return spotifyResponse;
     }

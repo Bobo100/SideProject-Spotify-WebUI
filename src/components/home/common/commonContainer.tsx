@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { useTheme } from "next-themes";
 import { getThemeClassName } from "@/utils/getThemeClassName";
-import styles from "./commonContainer.module.scss";
+import styles from "./CommonContainer.module.scss";
 import _throttle from "lodash/throttle";
 import _get from "lodash/get";
 

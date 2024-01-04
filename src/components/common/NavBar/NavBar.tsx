@@ -10,7 +10,7 @@ import { getThemeClassName } from "@/utils/getThemeClassName"
 import { useScrollLock } from "@/components/common/hook/scrollHook"
 import { LinkList } from "../LinkList"
 
-const NavBar = () => {
+export default function NavBar() {
     const router = useRouter()
 
     const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -111,5 +111,3 @@ const NavBar = () => {
         </nav >
     )
 }
-
-export default NavBar

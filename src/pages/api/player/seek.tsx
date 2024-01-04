@@ -2,29 +2,19 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import apiHttpsUtils from '@/utils/apiHttpsUtils';
 
 /**
- * api/player/play.tsx 播放歌曲
+ * api/player/seek.tsx 更改目前播放的時間
  * @param req 
  * @param res 
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { context_uri, uri } = req.body;
-    const body = {
-        context_uri: context_uri,
-        offset: {
-            position: 0
-        },
-        position_ms: 0
-    } as any;
-    if (uri) {
-        body.uris = [uri];
-    }
+    const { activeDeviceId, position_ms } = req.body;
+    const searchParams = new URLSearchParams();
+    searchParams.append('device_id', activeDeviceId);
+    searchParams.append('position_ms', position_ms);
+    const url = 'https://api.spotify.com/v1/me/player/seek' + '?' + searchParams.toString();
     try {
         await apiHttpsUtils.httpFetchPutWithToken({
-            url: 'https://api.spotify.com/v1/me/player/play',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: body,
+            url: url,
         });
         res.status(200).json({ message: 'success' });
     } catch (error) {

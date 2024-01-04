@@ -1,7 +1,7 @@
 import { useTheme } from "next-themes";
 import { getThemeClassName } from "@/utils/getThemeClassName";
 import styles from "./playList.module.scss";
-import CommonContainer from "./common/commonContainer";
+import CommonContainer from "./common/CommonContainer";
 import httpsUtils from "@/utils/httpsUtils";
 import processUtils from "@/utils/processUtils";
 import { filterSearchType } from "@/utils/playerlistType";

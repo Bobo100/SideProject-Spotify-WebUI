@@ -7,7 +7,7 @@ import processUtils from "@/utils/processUtils";
 import { filterSearchType } from "@/utils/playerlistType";
 import _throttle from "lodash/throttle";
 import ListComponent from "./common/listComponent";
-import CommonContainer from "./common/commonContainer";
+import CommonContainer from "./common/CommonContainer";
 
 export default function Player() {
     const { theme } = useTheme();
@@ -18,6 +18,7 @@ export default function Player() {
             url: '/api/player/queue'
         });
         if (!response) return
+        console.log(response)
         const result = processUtils.filterQueue(response)
         setQuery(result)
     }

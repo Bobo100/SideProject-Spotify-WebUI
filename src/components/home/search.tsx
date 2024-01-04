@@ -10,7 +10,7 @@ import { filterSearchType, playerlistType } from "@/utils/playerlistType";
 import _throttle from "lodash/throttle";
 import _get from "lodash/get";
 import ListComponent from "./common/listComponent";
-import CommonContainer from "./common/commonContainer";
+import CommonContainer from "./common/CommonContainer";
 
 export default function SelectList() {
     const { theme } = useTheme();
