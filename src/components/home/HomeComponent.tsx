@@ -23,7 +23,6 @@ import _isNil from 'lodash/isNil';
 import _ from 'lodash';
 
 export default function HomeComponent() {
-
     const { theme } = useTheme();
     const [view, setView] = useState(playerlistType.playlist);
     const [mute, setMute] = useState(false);
@@ -58,18 +57,15 @@ export default function HomeComponent() {
         };
     }
 
-    // 改成要一個計時，每幾秒去抓一次目前的歌曲資訊 但又要記得 一次只會跑一次 不要因為其他更新就又跑一次
     useEffect(() => {
         const asyncFunc = async () => {
             await getCurrentSongInfo();
         };
-
         asyncFunc();
 
         const timerId = setInterval(async () => {
             await getCurrentSongInfo();
         }, 1000);
-
         return () => {
             clearInterval(timerId);
         };
@@ -122,18 +118,6 @@ export default function HomeComponent() {
         })
         await getCurrentSongInfo();
     }
-
-    // const checkPlaying = async () => {
-    //     if (_isEqual(playing, false)) {
-    //         console.log('暫停中');
-    //     } else {
-    //         console.log('播放中');
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     checkPlaying();
-    // }, [playing]);
 
     const handlePlayPause = () => {
         if (playing) {
@@ -263,8 +247,8 @@ export default function HomeComponent() {
                                     className={getThemeClassName("progressBar", styles, theme)}
                                     title="Seek to a position in the audio"
                                     onChange={(e) => {
-                                        setProgressPercent(e.target.value as unknown as number);
-                                        handleTimeUpdate(e.target.value as unknown as number);
+                                        setProgressPercent(parseInt(e.target.value));
+                                        handleTimeUpdate(parseInt(e.target.value));
                                     }}
                                 />
                             </div>
@@ -284,8 +268,8 @@ export default function HomeComponent() {
                             className={`${getThemeClassName("volumeBar", styles, theme)} ${_isNil(activeDevice) ? styles.volumeBar_disable : ""}`}
                             title="Volume"
                             onChange={(e) => {
-                                setVolume(e.target.value as unknown as number);
-                                handleThrottleVolume(e.target.value as unknown as number);
+                                setVolume(parseInt(e.target.value));
+                                handleThrottleVolume(parseInt(e.target.value));
                             }}
                         />
                     </div>

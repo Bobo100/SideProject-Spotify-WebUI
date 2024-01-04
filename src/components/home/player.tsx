@@ -23,12 +23,10 @@ export default function Player() {
         setQuery(result)
     }
 
-    // 改成要一個計時，每幾秒去抓一次目前的歌曲資訊 但又要記得 一次只會跑一次 不要因為其他更新就又跑一次
     useEffect(() => {
         const asyncFunc = async () => {
             await getQueue();
         };
-
         asyncFunc();
 
         const timerId = setInterval(async () => {
