@@ -135,8 +135,6 @@ export default function HomeComponent() {
     //     checkPlaying();
     // }, [playing]);
 
-
-
     const handlePlayPause = () => {
         if (playing) {
             handleThrottlePlay(false);
@@ -260,12 +258,10 @@ export default function HomeComponent() {
                         </div>
                         <div className={styles.musicPlayer_center_bottom}>
                             <div className={styles.musicPlayer_center_container}>
-                                {/* <audio ref={audioRef} src={playingList.listeningList[playingList.playingIndex ? playingList.playingIndex : 0]} onTimeUpdate={handleTimeUpdate}/> */}
                                 <input type="range" min="0" max={100}
                                     value={progressPercent}
                                     className={getThemeClassName("progressBar", styles, theme)}
                                     title="Seek to a position in the audio"
-                                    // ref={progressBarRef}
                                     onChange={(e) => {
                                         setProgressPercent(e.target.value as unknown as number);
                                         handleTimeUpdate(e.target.value as unknown as number);
