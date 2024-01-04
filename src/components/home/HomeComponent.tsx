@@ -1,5 +1,5 @@
 // https://dev.to/documatic/building-a-music-player-in-react-2aa4 可以參考這個來寫
-import styles from './homeComponent.module.scss';
+import styles from './HomeComponent.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -16,6 +16,11 @@ import SelectList from './playlist';
 import Link from 'next/link';
 import httpsUtils from '@/utils/httpsUtils';
 import ImageWrapper from '../common/ImageWrapper/ImageWrapper';
+import _throttle from 'lodash/throttle';
+import _isEmpty from 'lodash/isEmpty';
+import _get from 'lodash/get';
+import _isNil from 'lodash/isNil';
+
 export default function HomeComponent() {
 
     const { theme } = useTheme();
@@ -23,37 +28,34 @@ export default function HomeComponent() {
     const [mute, setMute] = useState(false);
     const [playing, setPlaying] = useState(false);
     const [currentInfo, setCurrentInfo] = useState<MusicData>();
-    const [volume, setVolume] = useState(0);
+    const [activeDevice, setActiveDevice] = useState(null);
+    const [volume, setVolume] = useState<number>(50);
 
     const getCurrentSongInfo = async () => {
-        const response = await httpsUtils.post({
+        const response = await httpsUtils.get({
             url: '/api/player/current',
         });
-        if (!response) return null;
+        const errorStatus = _get(response, "error.status");
+        if (!errorStatus) {
+            setCurrentInfo({
+                song_name: response.item.name,
+                author: response.item.album.artists.map((item: any) => item.name),
+                album_image: response.item.album.images[0].url,
+            });
 
-        return {
-            song_name: response.item.name,
-            author: response.item.album.artists.map((item: any) => item.name),
-            album_image: response.item.album.images[0].url,
         };
-    };
+    }
 
     // 改成要一個計時，每幾秒去抓一次目前的歌曲資訊 但又要記得 一次只會跑一次 不要因為其他更新就又跑一次
     useEffect(() => {
         const asyncFunc = async () => {
-            const info = await getCurrentSongInfo();
-            if (info) {
-                setCurrentInfo(info);
-            }
+            await getCurrentSongInfo();
         };
 
         asyncFunc();
 
         const timerId = setInterval(async () => {
-            const info = await getCurrentSongInfo();
-            if (info) {
-                setCurrentInfo(info);
-            }
+            await getCurrentSongInfo();
         }, 5000);
 
         return () => {
@@ -61,34 +63,113 @@ export default function HomeComponent() {
         };
     }, []);
 
+    useEffect(() => {
+        const getActiveDevice = async () => {
+            const response = await httpsUtils.post({
+                url: '/api/player/devices',
+            });
+            const errorStatus = _get(response, "error.status");
+            if (errorStatus) {
+                return null;
+            } else {
+                const activeDevice = response.devices.find((item: any) => item.is_active);
+                if (!_isEmpty(activeDevice)) {
+                    setActiveDevice(activeDevice.id)
+                }
+            }
+        };
+        getActiveDevice();
+    }, []);
+
     const handleSetView = (view: string) => {
         setView(view);
     }
 
-    const handlePlayPause = () => {
-        setPlaying(!playing);
+    const handleBackward = async () => {
+        await httpsUtils.post({
+            url: '/api/player/skipPrev',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                activeDeviceId: activeDevice,
+            })
+        })
+        await getCurrentSongInfo();
     }
+
+    const handleForward = async () => {
+        await httpsUtils.post({
+            url: '/api/player/skipNext',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                activeDeviceId: activeDevice,
+            })
+        })
+        await getCurrentSongInfo();
+    }
+
+    const handlePlayPause = () => {
+        if (playing) {
+            handleThrottlePlay(false);
+            setPlaying(false);
+        } else {
+            handleThrottlePlay(true);
+            setPlaying(true);
+        }
+    }
+
+    const handleThrottlePlay = _throttle(async (play: boolean) => {
+        if (play) {
+            await httpsUtils.post({
+                url: '/api/player/pause',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    activeDeviceId: activeDevice,
+                })
+            })
+        } else {
+            await httpsUtils.post({
+                url: '/api/player/resume',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    activeDeviceId: activeDevice,
+                })
+            })
+        }
+    }, 1000, { leading: true, trailing: false });
 
     const handleMute = () => {
-        setMute(!mute);
+        if (mute) {
+            handleThrottleVolume(50);
+            setVolume(50);
+            setMute(false);
+        } else {
+            handleThrottleVolume(0);
+            setVolume(0);
+            setMute(true);
+        }
     }
 
-    //     curl --request PUT \
-    //   --url 'https://api.spotify.com/v1/me/player/volume?volume_percent=50' \
-    //   --header 'Authorization: Bearer 1POdFZRZbvb...qqillRxMr2z'
-
-    const handleVolume = async (volume: number) => {
+    const handleThrottleVolume = _throttle(async (volume: number) => {
         await httpsUtils.post({
             url: '/api/player/volume',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                activeDeviceId: activeDevice,
                 volume
             })
         })
-        setVolume(volume);
-    }
+    }, 1000, { leading: true, trailing: false });
+
 
     return (
         <div className={styles.container}>
@@ -131,9 +212,9 @@ export default function HomeComponent() {
                     <div className={styles.musicPlayer_center}>
                         <div className={styles.musicPlayer_center_top}>
                             <FontAwesomeIcon icon={fas.faShuffle} />
-                            <FontAwesomeIcon icon={fas.faBackward} />
+                            <FontAwesomeIcon icon={fas.faBackward} onClick={handleBackward} />
                             {playing ? <FontAwesomeIcon icon={fas.faPause} onClick={handlePlayPause} /> : <FontAwesomeIcon icon={fas.faPlay} onClick={handlePlayPause} />}
-                            <FontAwesomeIcon icon={fas.faForward} />
+                            <FontAwesomeIcon icon={fas.faForward} onClick={handleForward} />
                             <FontAwesomeIcon icon={fas.faRedo} />
                         </div>
                         <div className={styles.musicPlayer_center_bottom}>
@@ -159,17 +240,17 @@ export default function HomeComponent() {
                         <FontAwesomeIcon icon={fas.faMusic} />
                         <FontAwesomeIcon icon={fas.faBars} />
                         {mute ?
-                            <FontAwesomeIcon icon={fas.faVolumeMute}
-                            />
+                            <FontAwesomeIcon icon={fas.faVolumeMute} onClick={handleMute} />
                             :
-                            <FontAwesomeIcon icon={fas.faVolumeUp} />
+                            <FontAwesomeIcon icon={fas.faVolumeUp} onClick={handleMute} />
                         }
                         <input type="range" min="0" max="100"
                             value={volume}
-                            className={getThemeClassName("volumeBar", styles, theme)}
+                            className={`${getThemeClassName("volumeBar", styles, theme)} ${_isNil(activeDevice) ? styles.volumeBar_disable : ""}`}
                             title="Volume"
                             onChange={(e) => {
-                                handleVolume(parseInt(e.target.value));
+                                setVolume(e.target.value as unknown as number);
+                                handleThrottleVolume(e.target.value as unknown as number);
                             }}
                         />
                     </div>

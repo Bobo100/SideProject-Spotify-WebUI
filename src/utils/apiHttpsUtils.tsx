@@ -36,13 +36,22 @@ const utils = {
       },
       body: body,
     });
-    const data = await spotifyResponse.json();
-    const errorStatus = _get(data, "error.status");
-    if (_isEqual(errorStatus, 401)) {
-      await httpsUtils.get({ url: refreshLink });
-      await utils.postWithToken(props);
+    if (spotifyResponse.headers.get("content-type")?.includes("application/json")) {
+      const data = await spotifyResponse.json();
+      const errorStatus = _get(data, "error.status");
+      if (_isEqual(errorStatus, 401)) {
+        await httpsUtils.get({ url: refreshLink });
+        await utils.postWithToken(props);
+      }
+      return data;
+    } else {
+      const errorStatus = _get(spotifyResponse, "error.status");
+      if (_isEqual(errorStatus, 401)) {
+        await httpsUtils.get({ url: refreshLink });
+        await utils.postWithToken(props);
+      }
+      return spotifyResponse;
     }
-    return data;
   },
   /**
    * 沒帶token的post
@@ -57,13 +66,22 @@ const utils = {
       headers: headers,
       body: body,
     });
-    const data = await spotifyResponse.json();
-    const errorStatus = _get(data, "error.status");
-    if (_isEqual(errorStatus, 401)) {
-      await httpsUtils.get({ url: refreshLink });
-      await utils.post(props);
+    if (spotifyResponse.headers.get("content-type")?.includes("application/json")) {
+      const data = await spotifyResponse.json();
+      const errorStatus = _get(data, "error.status");
+      if (_isEqual(errorStatus, 401)) {
+        await httpsUtils.get({ url: refreshLink });
+        await utils.post(props);
+      }
+      return data;
+    } else {
+      const errorStatus = _get(spotifyResponse, "error.status");
+      if (_isEqual(errorStatus, 401)) {
+        await httpsUtils.get({ url: refreshLink });
+        await utils.post(props);
+      }
+      return spotifyResponse;
     }
-    return data;
   },
   /**
    * 帶有token的get
@@ -81,13 +99,22 @@ const utils = {
         ...headers,
       },
     });
-    const data = await spotifyResponse.json();
-    const errorStatus = _get(data, "error.status");
-    if (_isEqual(errorStatus, 401)) {
-      await httpsUtils.get({ url: refreshLink });
-      await utils.getWithToken(props);
+    if (spotifyResponse.headers.get("content-type")?.includes("application/json")) {
+      const data = await spotifyResponse.json();
+      const errorStatus = _get(data, "error.status");
+      if (_isEqual(errorStatus, 401)) {
+        await httpsUtils.get({ url: refreshLink });
+        await utils.getWithToken(props);
+      }
+      return data;
+    } else {
+      const errorStatus = _get(spotifyResponse, "error.status");
+      if (_isEqual(errorStatus, 401)) {
+        await httpsUtils.get({ url: refreshLink });
+        await utils.getWithToken(props);
+      }
+      return spotifyResponse;
     }
-    return data;
   },
   /**
    * 沒帶token的get
@@ -101,34 +128,31 @@ const utils = {
       method: "GET",
       headers: headers,
     });
-    const data = await spotifyResponse.json();
-    const errorStatus = _get(data, "error.status");
-    if (_isEqual(errorStatus, 401)) {
-      await httpsUtils.get({ url: refreshLink });
-      await utils.get(props);
+    if (spotifyResponse.headers.get("content-type")?.includes("application/json")) {
+      const data = await spotifyResponse.json();
+      const errorStatus = _get(data, "error.status");
+      if (_isEqual(errorStatus, 401)) {
+        await httpsUtils.get({ url: refreshLink });
+        await utils.get(props);
+      }
+      return data;
+    } else {
+      const errorStatus = _get(spotifyResponse, "error.status");
+      if (_isEqual(errorStatus, 401)) {
+        await httpsUtils.get({ url: refreshLink });
+        await utils.get(props);
+      }
+      return spotifyResponse;
     }
-    return data;
   },
   /**
    * 帶有token的put
    */
-
-  //   curl --request PUT \
-  //   --url https://api.spotify.com/v1/me/player/play \
-  //   --header 'Authorization: Bearer 1POdFZRZbvb...qqillRxMr2z' \
-  //   --header 'Content-Type: application/json' \
-  //   --data '{
-  //     "context_uri": "spotify:album:5ht7ItJgpBH7W6vJ5BqpPr",
-  //     "offset": {
-  //         "position": 5
-  //     },
-  //     "position_ms": 0
-  // }'
   httpFetchPutWithToken: async (props: postProps) => {
     const { url, headers = {}, body = {} } = props;
     await connectToDatabase();
     const { access_token } = await mongoDbUtils.getTokens();
-    const spotifyResponse = await fetch(url, {
+    await fetch(url, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -136,8 +160,6 @@ const utils = {
       },
       body: JSON.stringify(body),
     });
-    // const result = await spotifyResponse.json();
-    // console.log("result", result);
     return;
   },
 };

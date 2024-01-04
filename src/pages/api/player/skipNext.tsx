@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import apiHttpsUtils from '@/utils/apiHttpsUtils';
+import processUtils from '@/utils/processUtils';
 
 /**
  * api/player/skipNext.tsx 跳下一首
@@ -9,13 +10,16 @@ import apiHttpsUtils from '@/utils/apiHttpsUtils';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { activeDeviceId } = req.body;
     try {
-        await apiHttpsUtils.httpFetchPutWithToken({
+        const spotifyResponse = await apiHttpsUtils.postWithToken({
             url: 'https://api.spotify.com/v1/me/player/next',
-            body: {
-                device_id: activeDeviceId,
+            headers: {
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify({
+                device_id: activeDeviceId
+            })
         });
-        res.status(200).json({ message: 'success' });
+        await processUtils.processResponseAndReturn(spotifyResponse, res);
     } catch (error) {
         console.error('Spotify API error:', error);
         res.status(500).json({ message: 'Internal server error' });

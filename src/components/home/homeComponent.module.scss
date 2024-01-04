@@ -411,3 +411,7 @@
         box-shadow: -407px 0 0 400px $primary-color-dark;
     }
 }
+
+.volumeBar_disabled {
+    cursor: not-allowed;
+}

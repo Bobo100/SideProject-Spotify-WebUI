@@ -7,12 +7,17 @@ import apiHttpsUtils from '@/utils/apiHttpsUtils';
  * @param res 
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    const { activeDeviceId } = req.body;
+    const searchParams = new URLSearchParams();
+    searchParams.append('device_id', activeDeviceId);
+    const url = 'https://api.spotify.com/v1/me/player/play' + '?' + searchParams.toString();
     try {
         await apiHttpsUtils.httpFetchPutWithToken({
-            url: 'https://api.spotify.com/v1/me/player/play',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            // url: 'https://api.spotify.com/v1/me/player/play',
+            // body: {
+            //     device_id: activeDeviceId,
+            // },
+            url: url,
         });
         res.status(200).json({ message: 'success' });
     } catch (error) {

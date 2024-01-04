@@ -26,7 +26,7 @@ export default function PlayList() {
             });
             if (!response) return
         }
-        getPlaylist()
+        // getPlaylist()
     }, [])
 
     return (
