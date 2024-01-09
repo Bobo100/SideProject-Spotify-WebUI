@@ -11,3 +11,11 @@ export type filterSearchType = {
     uri: string;
     author?: string[];
 };
+
+export type filterPlayListType = {
+    name: string;
+    images: string;
+    external_url: string;
+    uri: string;
+    id: string;
+};
