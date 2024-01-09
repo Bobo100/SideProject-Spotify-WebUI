@@ -1,6 +1,6 @@
 import { useTheme } from "next-themes";
 import { getThemeClassName } from "@/utils/getThemeClassName";
-import styles from "./player.module.scss";
+import styles from "./Player.module.scss";
 import { useEffect, useState, useCallback } from "react";
 import httpsUtils from "@/utils/httpsUtils";
 import processUtils from "@/utils/processUtils";
@@ -18,7 +18,6 @@ export default function Player() {
             url: '/api/player/queue'
         });
         if (!response) return
-        console.log(response)
         const result = processUtils.filterQueue(response)
         setQuery(result)
     }
